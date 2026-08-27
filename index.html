@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+  <div class="dashboard">
+    <div class="topbar">
+      <div class="brand">☁ Weather Dashboard <span class="unit">°C</span></div>
+      <div class="about">About</div>
+    </div>
+
+    <div class="search">
+      <div class="search-box">
+        <form method="POST">
+          🔍
+          <input type="text" name="city" placeholder="Enter city..." required>
+          <button type="submit">Search</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="city">Zürich, Switzerland</div>
+      <div class="date">Wednesday, August 26</div>
+      <div class="icon">☀️</div>
+      <div class="temp">21°C</div>
+      <div class="desc">Partly cloudy</div>
+    </div>
+
+    <div class="stats">
+      <div>💧 <span>52%</span></div>
+      <div>💨 <span>11 km/h</span></div>
+      <div>🌡 Feels <span>20°C</span></div>
+    </div>
+
+    <hr>
+
+    <div class="forecast-title">Forecast</div>
+    <div class="forecast">
+      <div class="day"><div class="name">Thu</div><div class="icon">☀️</div><div class="temp">23°</div></div>
+      <div class="day"><div class="name">Fri</div><div class="icon">🌤️</div><div class="temp">22°</div></div>
+      <div class="day"><div class="name">Sat</div><div class="icon">🌧️</div><div class="temp">18°</div></div>
+      <div class="day"><div class="name">Sun</div><div class="icon">☁️</div><div class="temp">20°</div></div>
+      <div class="day"><div class="name">Mon</div><div class="icon">☀️</div><div class="temp">24°</div></div>
+    </div>
+  </div>
+
+</body>
+</html>
