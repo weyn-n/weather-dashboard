@@ -11,6 +11,8 @@ def home():
 
 	weather = None
 
+
+
 	if request.method == "POST": 
 
 		city = request.form["city"]
@@ -81,6 +83,16 @@ def home():
     		65: "Heavy rain"
 		}	
 
+		weather_icons = {
+    		0: "☀️",
+    		1: "🌤",
+    		2: "⛅",
+    		3: "☁️",
+    		61: "🌧",
+    		63: "🌧",
+    		65: "⛈"
+		}
+
 		try:
 			weather_response = requests.get(weather_url, params=weather_params)
 
@@ -123,16 +135,23 @@ def home():
 				"condition": condition,
 				"max_temperature": max_temperatures[i],
 				"min_temperature": min_temperatures[i],
-				"condition": condition
+				"condition": condition,
+				"icon": weather_icons.get(weather_codes[i], "❓")
 			})
 			
+		weather_icon = weather_icons.get(weather_code, "❓")
+
 		weather = {
 			"city": result["name"],
 			"country": result["country"],
 			"temperature": current["temperature_2m"],
 			"humidity": current["relative_humidity_2m"],
 			"wind": current["wind_speed_10m"],
-			"condition": condition
+			"condition": condition,
+			"icon": weather_icon,
+			"day": forecast[0]["day"],
+    		"month": forecast[0]["month"],
+    		"day_number": forecast[0]["day_number"]
 		}
 
 		weather_code = current["weather_code"]
@@ -163,7 +182,7 @@ def home():
 			forecast = forecast
 		)
 
-	return render_template("index.html")
+	return render_template("index.html", weather=None, forecast=None, error=None)
 
 if __name__ == "__main__":
 	app.run(debug=True)

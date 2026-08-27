@@ -14,6 +14,7 @@
 <body>
 
   <div class="dashboard">
+
     <div class="topbar">
       <div class="brand">☁ Weather Dashboard <span class="unit">°C</span></div>
     </div>
@@ -26,56 +27,45 @@
       </form>
     </div>
 
-    <div class="main">
-      <div class="city">Zürich, Switzerland</div>
-      <div class="date">Wednesday, August 26</div>
-      <div class="icon">☀️</div>
-      <div class="temp">21°C</div>
-      <div class="desc">Partly cloudy</div>
-    </div>
+    {% if error %}
+      <div class="toast" id="error-toast">
+        ⚠️ {{ error }}
+      </div>
+    {% endif %}
 
-    <div class="stats">
-      <div>💧 <span>52%</span></div>
-      <div>💨 <span>11 km/h</span></div>
-      <div>🌡 Feels <span>20°C</span></div>
-    </div>
+    {% if weather %}
+      <div class="main">
+        <div class="city">{{ weather.city }}, {{ weather.country }}</div>
+        <div class="date">{{ weather.day }}, {{ weather.month }} {{ weather.day_number }}</div>
+        <div class="icon">{{ weather.icon }}</div>
+        <div class="temp">{{ weather.temperature }}°C</div>
+        <div class="desc">{{ weather.condition }}</div>
+      </div>
 
-    <hr>
+      <div class="stats">
+        <div>💧 <span>Humidity: {{ weather.humidity }}%</span></div>
+        <div>💨 <span>Wind: {{ weather.wind }} km/h</span></div>
+      </div>
 
-    <div class="forecast-title">Forecast</div>
-    <div class="forecast">
-      <div class="day">
-        <div class="name">Thu</div>
-        <div class="icon">☀️</div>
-        <div class="temp_max">23°</div>
-        <div class="temp_min">17°</div>
+      <hr>
+
+      <div class="forecast-title">Forecast</div>
+      <div class="forecast">
+        {% for day in forecast %}
+
+        <div class="day">
+          <div class="name">{{ day.day }}</div>
+          <div class="icon">{{ day.icon }}</div>
+          <div class="temp_max">{{ day.max_temperature }}°</div>
+          <div class="temp_min">{{ day.min_temperature }}°</div>
+        </div>
+
+        {% endfor %}
       </div>
-      <div class="day">
-        <div class="name">Fri</div>
-        <div class="icon">🌤️</div>
-        <div class="temp_max">22°</div>
-        <div class="temp_min">18°</div>
-      </div>
-      <div class="day">
-        <div class="name">Sat</div>
-        <div class="icon">🌧️</div>
-        <div class="temp_max">18°</div>
-        <div class="temp_min">12°</div>
-      </div>
-      <div class="day">
-        <div class="name">Sun</div>
-        <div class="icon">☁️</div>
-        <div class="temp_max">20°</div>
-        <div class="temp_min">14°</div>
-      </div>
-      <div class="day">
-        <div class="name">Mon</div>
-        <div class="icon">☀️</div>
-        <div class="temp_max">24°</div>
-        <div class="temp_min">18°</div>
-      </div>
-    </div>
+    {% endif %}
+
   </div>
-
+  
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

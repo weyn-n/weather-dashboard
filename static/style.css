@@ -22,6 +22,7 @@ body{
 
 .dashboard{
   width:100%;
+  min-height: 25vh;
   max-width:480px;
   background:var(--card);
   border-radius:20px;
@@ -32,7 +33,7 @@ body{
 .topbar{
   display:flex;
   align-items:center;
-  justify-content:space-between;
+  justify-content:center;
   padding:16px 20px;
   border-bottom:1px solid var(--line);
 }
@@ -89,6 +90,32 @@ body{
   border-radius:8px;
   font-size:13px;
   cursor:pointer;
+}
+
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #e74c3c;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 1000;
+  font-weight: 500;
+  opacity: 0;
+  animation: toastIn 0.3s ease forwards, toastOut 0.3s ease 3s forwards;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; top: 0; }
+  to   { opacity: 1; top: 20px; }
+}
+
+@keyframes toastOut {
+  from { opacity: 1; }
+  to   { opacity: 0; visibility: hidden; }
 }
 
 .main{
