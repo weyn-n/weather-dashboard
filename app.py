@@ -1,24 +1,25 @@
 import requests
 from datetime import datetime
 from flask import Flask, render_template, request
-import json
 
+# Create the Flask application
 app = Flask(__name__)
 
+# Handle both page loading (GET) and city searches (POST)
 @app.route("/", methods=["GET", "POST"])
 
 def home():
 
 	weather = None
 
-
-
 	if request.method == "POST": 
 
+		# Get the city name submitted by the user
 		city = request.form["city"]
 
 		print("User searched for:", city)
 
+		# Use the geocoding API to convert the city name into coordinates
 		url = "https://geocoding-api.open-meteo.com/v1/search"
 
 		params = {
@@ -28,6 +29,7 @@ def home():
 				"format": "json"
 			}
 
+		# Handle connection errors when the weather service is unavailable
 		try:
 			response = requests.get(url, params = params)
 			response.raise_for_status()
@@ -38,6 +40,7 @@ def home():
 				error="Could not connect to the weather service"
 			)
 
+		# Check whether the API found the requested city
 		if "results" not in data:
 			return render_template(
 				"index.html",
@@ -45,9 +48,12 @@ def home():
 			)
 
 		result = data["results"][0]
+
+		# Check whether the API found the requested city
 		latitude = result["latitude"]
 		longitude = result["longitude"]
 
+		# Request current weather and a five-day forecast
 		weather_url = "https://api.open-meteo.com/v1/forecast"
 
 		weather_params = {
@@ -56,7 +62,6 @@ def home():
 
     		"current": [
         		"temperature_2m",
-				"apparent_temperature",
         		"relative_humidity_2m",
         		"wind_speed_10m",
 				"weather_code"
@@ -83,6 +88,7 @@ def home():
     		65: "Heavy rain"
 		}	
 
+		# Convert weather codes returned by the API into readable descriptions
 		weather_icons = {
     		0: "☀️",
     		1: "🌤",
@@ -108,18 +114,18 @@ def home():
 		weather_code = current["weather_code"]
 
 		daily = weather_data["daily"]
-
-		dates = weather_data["daily"]
-
 		dates = daily["time"]
+
 		max_temperatures = daily["temperature_2m_max"]
 		min_temperatures = daily["temperature_2m_min"]
 		weather_codes = daily["weather_code"]
 
 		forecast = []
 
+		# Build a user-friendly forecast for each of the five days
 		for i in range(5):
 
+			# Convert the API date string into separate day, month, and day number values
 			date = datetime.strptime(dates[i], "%Y-%m-%d")
 
 			day = date.strftime("%A")
@@ -135,12 +141,12 @@ def home():
 				"condition": condition,
 				"max_temperature": max_temperatures[i],
 				"min_temperature": min_temperatures[i],
-				"condition": condition,
 				"icon": weather_icons.get(weather_codes[i], "❓")
 			})
 			
 		weather_icon = weather_icons.get(weather_code, "❓")
 
+		# Convert the API date string into separate day, month, and day number values
 		weather = {
 			"city": result["name"],
 			"country": result["country"],
@@ -158,6 +164,7 @@ def home():
 
 		condition = weather_conditions.get(weather_code, "Unknown")
 
+		# Display the weather information in the terminal for debugging
 		print("\n" + "="*50)
 		print("CURRENT WEATHER")
 		print("="*50)
@@ -176,6 +183,7 @@ def home():
 
 		print("="*50 + "\n")
 
+		# Send the weather data and forecast to the HTML template
 		return render_template(
 			"index.html",
 			weather = weather,
@@ -184,5 +192,6 @@ def home():
 
 	return render_template("index.html", weather=None, forecast=None, error=None)
 
+# Start the Flask development server when this file is run directly
 if __name__ == "__main__":
-	app.run(debug=True)
+	app.run()

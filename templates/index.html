@@ -20,21 +20,23 @@
     </div>
 
     <div class="search">
-      <form method="POST" class="search-box">
+      <form method="POST" class="search-box"> <!-- Search form for entering a city name -->
           <span>🔍</span>
           <input type="text" placeholder="Enter city..." name="city" required>
           <button type="submit">Search</button>
       </form>
     </div>
 
+    <!-- Display an error message if the server returns an error -->
     {% if error %}
       <div class="toast" id="error-toast">
         ⚠️ {{ error }}
       </div>
     {% endif %}
 
+    <!-- Display current weather information when data is available -->
     {% if weather %}
-      <div class="main">
+      <div class="main"> <!-- Current weather details for the selected city -->
         <div class="city">{{ weather.city }}, {{ weather.country }}</div>
         <div class="date">{{ weather.day }}, {{ weather.month }} {{ weather.day_number }}</div>
         <div class="icon">{{ weather.icon }}</div>
@@ -42,15 +44,18 @@
         <div class="desc">{{ weather.condition }}</div>
       </div>
 
-      <div class="stats">
+      <div class="stats"> <!-- Additional weather information such as humidity and wind speed -->
         <div>💧 <span>Humidity: {{ weather.humidity }}%</span></div>
         <div>💨 <span>Wind: {{ weather.wind }} km/h</span></div>
       </div>
 
       <hr>
 
+      <!-- Display the weather forecast for upcoming days -->
       <div class="forecast-title">Forecast</div>
       <div class="forecast">
+
+        <!-- Generate a weather card for each forecast day -->
         {% for day in forecast %}
 
         <div class="day">
