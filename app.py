@@ -1,4 +1,5 @@
 import requests
+from datetime import datetime
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
@@ -24,8 +25,15 @@ def home():
 				"format": "json"
 			}
 
-		response = requests.get(url, params = params)
-		data = response.json()
+		try:
+			response = requests.get(url, params = params)
+			response.raise_for_status()
+			data = response.json()
+		except requests.RequestException:
+			return render_template(
+				"index.html",
+				error="Could not connect to the weather service"
+			)
 
 		if "results" not in data:
 			return render_template(
@@ -77,27 +85,71 @@ def home():
 
 		condition = weather_conditions.get(weather_code, "Unknown")
 
-		weather_response = requests.get(weather_url, params=weather_params)
+		try:
+			weather_response = requests.get(weather_url, params=weather_params)
 
-		weather_data = weather_response.json()
+			weather_response.raise_for_status()
+
+			weather_data = weather_response.json()
+
+		except requests.RequestException:
+			return render_template(
+				"index.html",
+				error="Could not connect to the weather service"
+			)
 
 		current = weather_data["current"]
 
 		daily = weather_data["daily"]
-		
+
+		dates = weather_data["daily"]
+
+		dates = daily["time"]
+		max_temperatures = daily["temperature_2m_max"]
+		min_temperatures = daily["temperature_2m_min"]
+		weather_codes = daily["weather_code"]
+
+		forecast = []
+
+		for i in range(5):
+
+			date = datetime.fromisocalendar(dates[i])
+
+			day = date.strftime("%A")
+			month = date.strftime("%B")
+			day_number = date.strftime("%d")
+
+			condition = weather_conditions.get(weather_codes[i], "Unknown")
+
+			forecast.append({
+				"day": day,
+				"month": month,
+				"day_number": day_number,
+				"condition": condition,
+				"max_temperature": max_temperatures[i],
+				"min_temperature": min_temperatures[i],
+				"condition": condition
+			})
+			
 		weather = {
 			"city": result["name"],
 			"country": result["country"],
 			"temperature": current["temperature_2m"],
 			"humidity": current["relative_humidity_2m"],
 			"wind": current["wind_speed_10m"],
-			"wind": current["wind_speed_10m"],
 			"condition": condition
 		}
 
+		weather_code = current["weather_code"]
+
+		condition = weather_conditions.get(weather_code, "Unknown")
+
+		print(forecast)
+
 		return render_template(
 			"index.html",
-			weather = weather 
+			weather = weather,
+			forecast = forecast
 		)
 
 	return render_template("index.html ")
