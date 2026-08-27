@@ -1,6 +1,7 @@
 import requests
 from datetime import datetime
 from flask import Flask, render_template, request
+import json
 
 app = Flask(__name__)
 
@@ -14,7 +15,7 @@ def home():
 
 		city = request.form["city"]
 
-		print("User sezrched for:", city)
+		print("User searched for:", city)
 
 		url = "https://geocoding-api.open-meteo.com/v1/search"
 
@@ -42,7 +43,6 @@ def home():
 			)
 
 		result = data["results"][0]
-
 		latitude = result["latitude"]
 		longitude = result["longitude"]
 
@@ -79,11 +79,7 @@ def home():
     		61: "Rain",
     		63: "Rain",
     		65: "Heavy rain"
-		}
-
-		weather_code = current["weather_code"]
-
-		condition = weather_conditions.get(weather_code, "Unknown")
+		}	
 
 		try:
 			weather_response = requests.get(weather_url, params=weather_params)
@@ -93,12 +89,11 @@ def home():
 			weather_data = weather_response.json()
 
 		except requests.RequestException:
-			return render_template(
-				"index.html",
-				error="Could not connect to the weather service"
-			)
+			return render_template("index.html", error="Could not connect to the weather service")
 
 		current = weather_data["current"]
+
+		weather_code = current["weather_code"]
 
 		daily = weather_data["daily"]
 
@@ -113,7 +108,7 @@ def home():
 
 		for i in range(5):
 
-			date = datetime.fromisocalendar(dates[i])
+			date = datetime.strptime(dates[i], "%Y-%m-%d")
 
 			day = date.strftime("%A")
 			month = date.strftime("%B")
@@ -144,7 +139,23 @@ def home():
 
 		condition = weather_conditions.get(weather_code, "Unknown")
 
-		print(forecast)
+		print("\n" + "="*50)
+		print("CURRENT WEATHER")
+		print("="*50)
+		print(f"City:        {weather['city']}, {weather['country']}")
+		print(f"Temperature: {weather['temperature']}°C")
+		print(f"Humidity:    {weather['humidity']}%")
+		print(f"Wind:        {weather['wind']} km/h")
+		print(f"Condition:   {weather['condition']}")
+
+		print("\n" + "="*50)
+		print("5-DAY FORECAST")
+		print("="*50)
+
+		for day in forecast:
+			print(f"{day['day']:<10} {day['day_number']} {day['month']:<10} "f"{day['condition']:<15} {day['min_temperature']}°C - {day['max_temperature']}°C")
+
+		print("="*50 + "\n")
 
 		return render_template(
 			"index.html",
@@ -152,8 +163,7 @@ def home():
 			forecast = forecast
 		)
 
-	return render_template("index.html ")
-
+	return render_template("index.html")
 
 if __name__ == "__main__":
 	app.run(debug=True)
