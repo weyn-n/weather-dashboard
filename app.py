@@ -1,3 +1,4 @@
+import os
 import requests
 from datetime import datetime
 from flask import Flask, render_template, request
@@ -194,4 +195,8 @@ def home():
 
 # Start the Flask development server when this file is run directly
 if __name__ == "__main__":
-	app.run()
+
+	app.run(
+    	host="0.0.0.0",
+    	port=int(os.environ.get("PORT", 5000))
+	)
